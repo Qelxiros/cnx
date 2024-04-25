@@ -34,7 +34,7 @@
 //!
 //!     let mut cnx = Cnx::new(Position::Top);
 //!     cnx.add_widget(ActiveWindowTitle::new(attr.clone()));
-//!     cnx.add_widget(Clock::new(attr.clone(), None));
+//!     cnx.add_widget(Clock::<Minutes>::new(attr.clone(), None));
 //!     cnx.run()?;
 //!
 //!     Ok(())
@@ -59,7 +59,7 @@
 //! - [`crate::widgets::Pager`] — Shows the WM's workspaces/groups, highlighting whichever is
 //!   currently active. (Uses [`EWMH`]'s `_NET_DESKTOP_NAMES`,
 //!   `_NET_NUMBER_OF_DESKTOPS` and `_NET_CURRENT_DESKTOP`).
-//! - [`crate::widgets::Clock`] — Shows the time.
+//! - [`crate::widgets::Clock`] — Shows the time with a given precision.
 //!
 //! The cnx-contrib crate contains additional widgets:
 //!
