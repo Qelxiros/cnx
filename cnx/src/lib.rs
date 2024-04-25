@@ -118,6 +118,7 @@
 #![recursion_limit = "256"]
 
 mod bar;
+pub mod clock_stream;
 pub mod text;
 pub mod widgets;
 mod xcb;
