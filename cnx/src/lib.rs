@@ -122,10 +122,14 @@ pub mod text;
 pub mod widgets;
 mod xcb;
 
+use std::collections::HashMap;
+
 use anyhow::Result;
 use tokio::runtime::Runtime;
 use tokio::task;
 use tokio_stream::{StreamExt, StreamMap};
+use widgets::AsyncWidget;
+use widgets::Placeholder;
 
 use crate::bar::Bar;
 use crate::widgets::Widget;
@@ -146,7 +150,9 @@ pub struct Cnx {
     /// The position of the Cnx bar
     position: Position,
     /// The list of widgets attached to the Cnx bar
-    widgets: Vec<Box<dyn Widget>>,
+    widgets: Vec<(Box<dyn Widget>, bool)>,
+    /// The list of unloaded widgets attached to the Cnx bar
+    async_widgets: Vec<Box<dyn AsyncWidget>>,
     /// The (x,y) offset of the bar
     /// It can be used in order to run multiple bars in a multi-monitor setup
     offset: Offset,
@@ -164,9 +170,11 @@ impl Cnx {
     /// [`Position`]: enum.Position.html
     pub fn new(position: Position) -> Self {
         let widgets = Vec::new();
+        let async_widgets = Vec::new();
         Self {
             position,
             widgets,
+            async_widgets,
             offset: Offset::default(),
             width: None,
         }
@@ -207,7 +215,22 @@ impl Cnx {
     where
         W: Widget + 'static,
     {
-        self.widgets.push(Box::new(widget));
+        self.widgets.push((Box::new(widget), false));
+    }
+
+    /// Adds an async widget to the `Cnx` instance.
+    ///
+    /// Takes ownership of the [`Widget`] and adds it to the Cnx instance to
+    /// the right of any existing widgets.
+    ///
+    /// [`Widget`]: widgets/trait.Widget.html
+    pub fn add_widget_async<W>(&mut self, widget: W)
+    where
+        W: AsyncWidget + 'static,
+    {
+        self.widgets
+            .push((Box::new(Placeholder::new(widget.get_fallback())), true));
+        self.async_widgets.push(Box::new(widget));
     }
 
     /// Runs the Cnx instance.
@@ -229,9 +252,28 @@ impl Cnx {
         let mut bar = Bar::new(self.position, self.width, self.offset)?;
 
         let mut widgets = StreamMap::with_capacity(self.widgets.len());
+        let mut async_indices = Vec::new();
         for widget in self.widgets {
             let idx = bar.add_content(Vec::new())?;
-            widgets.insert(idx, widget.into_stream()?);
+            if widget.1 {
+                async_indices.push(idx);
+            }
+            widgets.insert(idx, widget.0.into_stream()?);
+        }
+
+        let mut async_widgets = task::JoinSet::new();
+        if self.async_widgets.len() != async_indices.len() {
+            // This *should* be unreachable
+            panic!("Incorrect number of async widgets");
+        }
+        let mut ids_to_indices = HashMap::new();
+        for (widget, idx) in self
+            .async_widgets
+            .into_iter()
+            .zip(async_indices.into_iter())
+        {
+            let id = async_widgets.spawn(widget.into_stream()).id();
+            ids_to_indices.insert(id, idx);
         }
 
         let mut event_stream = XcbEventStream::new(bar.connection().clone())?;
@@ -253,6 +295,19 @@ impl Cnx {
                             Ok(texts) => {
                                 if let Err(err) = bar.update_content(idx, texts) {
                                     println!("Error updating widget {idx}: {err}");
+                                }
+                            }
+                        }
+                    },
+
+                    Some(result) = async_widgets.join_next_with_id() => {
+                        match result {
+                            Err(_) | Ok((_, Err(_))) => println!("Error loading widget"),
+                            Ok((id, Ok(widget))) => {
+                                if let Some(idx) = ids_to_indices.get(&id) {
+                                    widgets.insert(*idx, widget);
+                                } else {
+                                    println!("Error inserting loaded widget");
                                 }
                             }
                         }
