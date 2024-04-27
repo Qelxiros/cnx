@@ -19,6 +19,7 @@ leftwm = ["process-stream", "serde", "serde_derive", "serde_json"]
 [dependencies]
 cnx = { path = "../cnx" }
 anyhow = "1.0.41"
+inotify = { version = "0.10.2", optional = true }
 weathernoaa = "0.2.0"
 tokio = { version = "1.18.0", features = ["rt", "net", "time", "macros", "rt-multi-thread"] }
 tokio-stream = { version = "0.1.8" }

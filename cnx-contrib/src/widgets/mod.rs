@@ -6,6 +6,10 @@ pub mod command;
 pub mod cpu;
 /// Disk usage widget to show current usage and remaining free space
 pub mod disk_usage;
+/// Inotfiy widget to monitor files
+#[cfg(feature = "inotify")]
+#[cfg_attr(docsrs, doc(cfg(feature = "inotify")))]
+pub mod inotify;
 /// LeftWM widget that subscribes to leftwm-state and streams the monitors and tags upfate
 #[cfg(feature = "leftwm")]
 #[cfg_attr(docsrs, doc(cfg(feature = "leftwm")))]
