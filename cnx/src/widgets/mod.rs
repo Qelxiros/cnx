@@ -1,12 +1,13 @@
 //! Provided widgets and types for creating new widgets.
 
 mod active_window_title;
-
 mod clock;
 mod pager;
+mod separator;
 pub use self::active_window_title::ActiveWindowTitle;
 pub use self::clock::Clock;
 pub use self::pager::Pager;
+pub use self::separator::Separator;
 use crate::text::Text;
 use anyhow::Result;
 use futures::stream::Stream;
