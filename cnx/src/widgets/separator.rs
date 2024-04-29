@@ -4,6 +4,9 @@ use crate::text::{Attributes, Text};
 
 use super::Widget;
 
+/// Acts as a separator between widgets
+///
+/// Supports markup for easy formatting
 pub struct Separator {
     attr: Attributes,
     text: String,
