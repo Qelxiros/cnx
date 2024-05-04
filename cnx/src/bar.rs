@@ -305,7 +305,7 @@ impl Bar {
             || old
                 .iter()
                 .zip(&new)
-                .any(|(old, new)| ((old.width - new.width).abs() < error_margin) && !new.stretch);
+                .any(|(old, new)| ((old.width - new.width).abs() > error_margin) && !new.stretch);
 
         // Steal dimenions from old ComputedText. If we need new dimensions,
         // they'll be recomputed by redraw_entire_bar().

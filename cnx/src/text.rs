@@ -107,6 +107,14 @@ impl Padding {
             bottom,
         }
     }
+
+    pub fn strip_left(&mut self) {
+        self.left = 0.;
+    }
+
+    pub fn strip_right(&mut self) {
+        self.right = 0.;
+    }
 }
 
 #[derive(Clone, PartialEq, Eq)]
@@ -130,6 +138,23 @@ pub struct Attributes {
     pub fg_color: Color,
     pub bg_color: Option<Color>,
     pub padding: Padding,
+}
+
+impl Attributes {
+    pub fn with_bg(mut self, bg: Option<Color>) -> Self {
+        self.bg_color = bg;
+        self
+    }
+
+    pub fn strip_right_padding(mut self) -> Self {
+        self.padding.strip_right();
+        self
+    }
+
+    pub fn strip_left_padding(mut self) -> Self {
+        self.padding.strip_left();
+        self
+    }
 }
 
 pub struct PagerAttributes {

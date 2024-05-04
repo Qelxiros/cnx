@@ -11,7 +11,7 @@ rustdoc-args = ["--cfg", "docsrs"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [features]
-default = ["volume"]
+default = ["volume", "mpd"]
 volume = ["alsa", "sioctl"]
 wireless = ["iwlib"]
 leftwm = ["process-stream", "serde", "serde_derive", "serde_json"]
@@ -20,19 +20,21 @@ leftwm = ["process-stream", "serde", "serde_derive", "serde_json"]
 cnx = { path = "../cnx" }
 anyhow = "1.0.41"
 weathernoaa = "0.2.0"
-tokio = { version = "1.18.0", features = ["rt", "net", "time", "macros", "rt-multi-thread"] }
+tokio = { version = "1.30.0", features = ["rt", "net", "time", "macros", "rt-multi-thread"] }
 tokio-stream = { version = "0.1.8" }
 async-stream = "0.3.3"
-iwlib = { version = "0.1", optional = true}
-alsa = { version = "0.5.0", optional = true}
+iwlib = { version = "0.1", optional = true }
+alsa = { version = "0.5.0", optional = true }
 regex = "1.5"
 nix = "0.20.0"
 byte-unit = "4.0.12"
 reqwest = { version = "0.11" }
-process-stream = { version = "0.4.1", optional = true}
-serde = { version = "1.0.152", optional = true}
-serde_derive = { version = "1.0.152", optional = true}
-serde_json = { version = "1.0.91", optional = true}
+process-stream = { version = "0.4.1", optional = true }
+serde = { version = "1.0.152", optional = true }
+serde_derive = { version = "1.0.152", optional = true }
+serde_json = { version = "1.0.91", optional = true }
+mpd = { version = "0.1.0", optional = true }
+futures = "0.3.30"
 [target.'cfg(openbsd)'.dependencies]
-sioctl = { version = "0.0.1", optional = true}
+sioctl = { version = "0.0.1", optional = true }
 openssl = { version = "0.10", features = ["vendored"] }

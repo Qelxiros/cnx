@@ -10,6 +10,10 @@ pub mod disk_usage;
 #[cfg(feature = "leftwm")]
 #[cfg_attr(docsrs, doc(cfg(feature = "leftwm")))]
 pub mod leftwm;
+/// MPD widget to show information about the current song
+#[cfg(feature = "mpd")]
+#[cfg_attr(docsrs, doc(cfg(feature = "mpd")))]
+pub mod mpd;
 /// Sensor widget to periodically parses and displays the output of the sensors provided by the system.
 pub mod sensors;
 /// Volume widget to show the current volume/mute status of the default output device.
